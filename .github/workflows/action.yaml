@@ -228,7 +228,7 @@ jobs:
         HELM_CHART_PATH: ./cis-k8s-job
       run: |
         # Login to ECR
-        aws ecr get-login-password --region $AWS_REGION | helm registry login --username AWS --password-stdin $ECR_REGISTRY
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
 
         # Package Helm Chart
         helm package $HELM_CHART_PATH
