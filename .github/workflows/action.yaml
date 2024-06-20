@@ -124,7 +124,7 @@ jobs:
         id: extract_version
         run: |
           TAG_NAME="${{ github.ref_name }}"  # e.g., v1.2.3
-          VERSION="${TAG_NAME#v}"  # Remove leading 'v'
+          VERSION="${TAG_NAME}"  # Remove leading 'v'
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Update Helm Chart Version for k8s-risk-assessment-job
