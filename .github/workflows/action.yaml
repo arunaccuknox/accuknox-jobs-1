@@ -157,6 +157,10 @@ jobs:
           CHART_PACKAGE_3=$(ls kiem-job-*.tgz)
           echo "CHART_PACKAGE_3=$CHART_PACKAGE_3" >> $GITHUB_ENV
 
+      - name: Login to AWS ECR
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin ${{secrets.REPO}}
+
       - name: Push k8s-risk-assessment-job to ECR
         run: |
           helm push ${{ env.CHART_PACKAGE_1 }} oci://${{ secrets.REPO }}
