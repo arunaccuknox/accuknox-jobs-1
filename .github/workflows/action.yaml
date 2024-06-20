@@ -180,7 +180,7 @@
 #         helm push ${{ env.CHART_NAME_K8S }}-${{ env.BUILD }}.tgz oci://${{ env.REPO }}
 
 
-name: Helm Chart Push to AWS ECR
+name: Helm Charts Push to AWS ECR
 
 on:
   push:
@@ -212,22 +212,54 @@ jobs:
         run: |
           aws ecr-public get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin ${{secrets.REPO}}
 
-      - name: Package Helm Chart
+      - name: Package k8s-risk-assessment-job
+        run: |
+          helm package k8s-risk-assessment-job
+          CHART_PACKAGE_1=$(ls k8s-risk-assessment-job-*.tgz)
+          echo "CHART_PACKAGE_1=$CHART_PACKAGE_1" >> $GITHUB_ENV
+
+      - name: Package k8tls-job
+        run: |
+          helm package k8tls-job
+          CHART_PACKAGE_2=$(ls k8tls-job-*.tgz)
+          echo "CHART_PACKAGE_2=$CHART_PACKAGE_2" >> $GITHUB_ENV
+
+      - name: Package kiem-job
         run: |
           helm package kiem-job
-          CHART_PACKAGE=$(ls *.tgz)
-          echo "CHART_PACKAGE=$CHART_PACKAGE" >> $GITHUB_ENV
+          CHART_PACKAGE_3=$(ls kiem-job-*.tgz)
+          echo "CHART_PACKAGE_3=$CHART_PACKAGE_3" >> $GITHUB_ENV
 
-      - name: Push Helm Chart to ECR
+      # - name: Package Helm Chart 4
+      #   run: |
+      #     helm package helm-chart-4
+      #     CHART_PACKAGE_4=$(ls helm-chart-4-*.tgz)
+      #     echo "CHART_PACKAGE_4=$CHART_PACKAGE_4" >> $GITHUB_ENV
+
+      - name: Push Helm Chart 1 to ECR
         run: |
-          helm push ${{ env.CHART_PACKAGE }} oci://${{secrets.REPO}}
+          helm push ${{ env.CHART_PACKAGE_1 }} oci://${{ secrets.REPO }}
+
+      - name: Push Helm Chart 2 to ECR
+        run: |
+          helm push ${{ env.CHART_PACKAGE_2 }} oci://${{ secrets.REPO }}
+
+      - name: Push Helm Chart 3 to ECR
+        run: |
+          helm push ${{ env.CHART_PACKAGE_3 }} oci://${{ secrets.REPO }}
+
+      # - name: Push Helm Chart 4 to ECR
+      #   run: |
+      #     helm push ${{ env.CHART_PACKAGE_4 }} oci://${{ secrets.REPO }}
 
       - name: Notify Success
         if: success()
-        run: echo "Helm Chart has been successfully pushed to AWS ECR."
+        run: echo "All Helm Charts have been successfully pushed to AWS ECR."
 
       - name: Notify Failure
         if: failure()
-        run: echo "Failed to push Helm Chart to AWS ECR."
+        run: echo "Failed to push one or more Helm Charts to AWS ECR."
+
+
 
 
