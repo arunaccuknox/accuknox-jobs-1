@@ -208,7 +208,7 @@ jobs:
       id: helm_validation
       run: |
         pwd
-        helm lint ./cis-k8s-job
+        helm lint ./accuknox-jobs/cis-k8s-job/
         helm template ./cis-k8s-job > /dev/null
         helm lint ./k8s-risk-assessment-job
         helm template ./k8s-risk-assessment-job > /dev/null
