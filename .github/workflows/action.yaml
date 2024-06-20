@@ -207,6 +207,7 @@ jobs:
     - name: Validate Helm Chart
       id: helm_validation
       run: |
+        pwd
         helm lint ./cis-k8s-job
         helm template ./cis-k8s-job > /dev/null
         helm lint ./k8s-risk-assessment-job
