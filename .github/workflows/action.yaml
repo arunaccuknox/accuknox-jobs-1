@@ -190,33 +190,19 @@ on:
     branches:
       - test
 
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ECR_REGISTRY: ${{secrets.REPO}}
+  HELM_CHART_PATH: ./.cis-k8s-job
+  
 jobs:
   helm_validation_and_push:
     runs-on: ubuntu-latest
     steps:
-    # Step 2: Validate Helm Chart (lint and template)
-    # - name: Validate Helm Chart
-    #   id: helm_validation
-    #   run: |
-    #     pwd
-    #     helm lint ./accuknox-jobs/cis-k8s-job/
-    #     helm template ./cis-k8s-job > /dev/null
-    #     helm lint ./k8s-risk-assessment-job
-    #     helm template ./k8s-risk-assessment-job > /dev/null
-    #     helm lint ./k8tls-job
-    #     helm template ./k8tls-job > /dev/null
-    #     helm lint ./kiem-job
-    #     helm template ./kiem-job > /dev/null
-
-    # Step 3: Push Helm Chart to AWS ECR (adjust as per your AWS credentials)
     - name: Push Helm Chart to AWS ECR
       id: helm_push
-      env:
-        AWS_REGION: us-east-1
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        ECR_REGISTRY: ${{secrets.REPO}}
-        HELM_CHART_PATH: ./.cis-k8s-job
       run: |
         # Login to ECR
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
